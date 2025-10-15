@@ -5,6 +5,15 @@
 namespace EspFc
 {
 
+enum EscProtocolType
+{
+    UNKNOWN = 0,
+    ONESHOT125,
+    DSHOT150,
+    DSHOT300,
+    DSHOT600,
+};
+
 class BaseProtocol
 {
 public:

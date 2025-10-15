@@ -11,7 +11,7 @@ namespace EspFc
 class OneShot125Protocol : public BaseProtocol
 {
 public:
-    OneShot125Protocol();
+    explicit OneShot125Protocol(EscProtocolType type);
     ~OneShot125Protocol();
 
     esp_err_t init(gpio_num_t gpio_num);

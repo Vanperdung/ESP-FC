@@ -6,18 +6,10 @@
 
 #include "base_protocol.h"
 #include "oneshot125_protocol.h"
+#include "dshot_protocol.h"
 
 namespace EspFc
 {
-
-enum EscProtocolType
-{
-    UNKNOWN = 0,
-    ONESHOT125,
-    DSHOT150,
-    DSHOT300,
-    DSHOT600,
-};
 
 class EscProtocolFactory
 {
@@ -33,7 +25,7 @@ public:
     template <typename T>
     void registerType(EscProtocolType type)
     {
-        protocol_registry_[type] = []() { return std::make_unique<T>(); };
+        protocol_registry_[type] = [type]() { return std::make_unique<T>(type); };
     }
 
     std::unique_ptr<BaseProtocol> create(EscProtocolType type)
@@ -48,6 +40,9 @@ private:
     EscProtocolFactory()
     {
         registerType<OneShot125Protocol>(ONESHOT125);
+        registerType<DShotProtocol>(DSHOT150);
+        registerType<DShotProtocol>(DSHOT300);
+        registerType<DShotProtocol>(DSHOT600);
     }
 
     std::unordered_map<EscProtocolType, FactoryFunc> protocol_registry_;

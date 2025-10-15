@@ -1,7 +1,6 @@
 #include <esp_log.h>
 
 #include "oneshot125_protocol.h"
-#include "esc_protocol_factory.h"
 
 #define ONESHOT125_MIN_PULSE 125
 #define ONESHOT125_MAX_PULSE 250
@@ -11,9 +10,8 @@ using namespace EspFc;
 
 static const char *TAG = "ONESHOT125_PROTOCOL";
 
-OneShot125Protocol::OneShot125Protocol()
+OneShot125Protocol::OneShot125Protocol(EscProtocolType type)
 {
-    EscProtocolFactory::instance().registerType<OneShot125Protocol>(ONESHOT125);
 }
 
 OneShot125Protocol::~OneShot125Protocol()
@@ -67,7 +65,8 @@ esp_err_t OneShot125Protocol::sendCommand(unsigned int throttle)
 esp_err_t OneShot125Protocol::cleanup()
 {
     ESP_ERROR_CHECK(rmt_disable(channel_));
-    ESP_ERROR_CHECK(rmt_del_encoder(encoder_));
+    if (encoder_)
+        ESP_ERROR_CHECK(rmt_del_encoder(encoder_));
     ESP_ERROR_CHECK(rmt_del_channel(channel_));
 
     return ESP_OK;

@@ -39,28 +39,45 @@ esp_err_t EscController::initChannel(unsigned int channel_index,
 
 esp_err_t EscController::execute()
 {
-    unsigned int throttle = 0;
-    unsigned int count = 0;
+    unsigned int throttle = 48;
+    bool increasing = true;
+    int count = 0;
 
-    for (int i = 0; i < 10000; i++)
+    ESP_LOGI(TAG, "Start controlling motor!");
+
+    for (int i = 0; i <= 2000; i++)
     {
-        channels_[0].protocol->sendCommand(throttle);
-        // vTaskDelay(pdMS_TO_TICKS(1));
+        channels_[0].protocol->sendCommand(0);
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 
-    ESP_LOGI(TAG, "Start increasing throttle!");
-
-    while (throttle <= 100)
+    while (1)
     {
-        count++;
-        if (count == 500)
+        // Reverse direction at limits
+        if (throttle >= 2047)
         {
-            throttle += 1;
-            count = 0;
+            throttle = 2047;
+            increasing = false;
+        }
+        else if (throttle <= 48)
+        {
+            throttle = 48;
+            increasing = true;
         }
 
         channels_[0].protocol->sendCommand(throttle);
-        // vTaskDelay(pdMS_TO_TICKS(1));
+
+        // Adjust throttle up or down
+        if (count == 500)
+        {
+            throttle += (increasing ? 10 : -10);
+            ESP_LOGI(TAG, "throttle = %d", throttle);
+            count = 0;
+        }
+
+        count++;
+
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 
     return ESP_OK;

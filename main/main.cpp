@@ -12,7 +12,8 @@ extern "C" void app_main(void)
 {
     EspFc::EscController esc_controller;
 
-    esc_controller.initChannel(0, EspFc::ONESHOT125, GPIO_NUM_18);
+    esc_controller.initChannel(0, EspFc::DSHOT300, GPIO_NUM_18);
 
     esc_controller.execute();
+
 }
